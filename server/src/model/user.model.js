@@ -1,4 +1,6 @@
 import mongoose from 'mongoose'
+import bcryptjs from 'bcryptjs'
+import { emailRegex, passwordRegex } from '~/utils/regex'
 
 let profile_imgs_name_list = [
   'Garfield',
@@ -41,9 +43,26 @@ const userSchema = new mongoose.Schema(
         type: String,
         required: true,
         lowercase: true,
-        unique: true
+        unique: true,
+        validate: {
+          validator: function (v) {
+            return emailRegex.test(v)
+          },
+          message: (props) => `${props.value} is not a valid email`
+        }
       },
-      password: String,
+      password: {
+        type: String,
+        required: true,
+        select: false,
+        minlength: [6, 'Password must be 6 letters long'],
+        validate: {
+          validator: function (v) {
+            return passwordRegex.test(v)
+          },
+          message: (props) => `${props.value} is not a valid password`
+        }
+      },
       username: {
         type: String,
         minlength: [3, 'Username must be 3 letters long'],
@@ -122,6 +141,23 @@ const userSchema = new mongoose.Schema(
   }
 )
 
+// encrypt password before saving
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('personal_info.password')) return next()
+
+  this.personal_info.password = await bcryptjs.hash(
+    this.personal_info.password,
+    12
+  )
+  next()
+})
+
+// Compare password
+userSchema.methods.correctPassword = async function (candidatePassword) {
+  return await bcryptjs.compare(candidatePassword, this.personal_info.password)
+}
+
+// export user schema
 const User = mongoose.model('User', userSchema)
 
 export default User
