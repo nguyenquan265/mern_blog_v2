@@ -53,15 +53,14 @@ const userSchema = new mongoose.Schema(
       },
       password: {
         type: String,
-        required: true,
-        select: false,
-        minlength: [6, 'Password must be 6 letters long'],
-        validate: {
-          validator: function (v) {
-            return passwordRegex.test(v)
-          },
-          message: (props) => `${props.value} is not a valid password`
-        }
+        select: false
+        // minlength: [6, 'Password must be 6 letters long'],
+        // validate: {
+        //   validator: function (v) {
+        //     return passwordRegex.test(v)
+        //   },
+        //   message: (props) => `${props.value} is not a valid password`
+        // }
       },
       username: {
         type: String,
@@ -142,15 +141,15 @@ const userSchema = new mongoose.Schema(
 )
 
 // encrypt password before saving
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('personal_info.password')) return next()
+// userSchema.pre('save', async function (next) {
+//   if (!this.isModified('personal_info.password')) return next()
 
-  this.personal_info.password = await bcryptjs.hash(
-    this.personal_info.password,
-    12
-  )
-  next()
-})
+//   this.personal_info.password = await bcryptjs.hash(
+//     this.personal_info.password,
+//     12
+//   )
+//   next()
+// })
 
 // Compare password
 userSchema.methods.correctPassword = async function (candidatePassword) {

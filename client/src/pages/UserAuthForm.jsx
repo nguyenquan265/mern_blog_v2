@@ -1,25 +1,85 @@
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import InputBox from '../components/InputBox'
 import PageAnimation from '../common/PageAnimation'
+import toast, { Toaster } from 'react-hot-toast'
+import customAxios from '../utils/customAxios'
+import { storeInSession } from '../utils/session'
+import { useContext } from 'react'
+import { AuthContext } from '../context/AuthProvider'
+import { signInWithGoogle } from '../firebase/firebase'
 
 const UserAuthForm = ({ type }) => {
-  return (
+  const { user, setUser } = useContext(AuthContext)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    const serverRoute = type === 'sign-in' ? '/auth/signin' : '/auth/signup'
+    const formElement = document.getElementById('formElement')
+    const formData = new FormData(formElement)
+    let data = {}
+
+    formData.forEach((value, key) => {
+      data[key] = value
+    })
+
+    try {
+      const res = await customAxios.post(serverRoute, data)
+
+      formElement.reset()
+      setUser(res.data.user)
+      storeInSession('user', res.data.user)
+      storeInSession('accessToken', res.data.accessToken)
+    } catch (error) {
+      console.log(error)
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          'Something went wrong'
+      )
+    }
+  }
+
+  const handleGoogleAuth = async (e) => {
+    e.preventDefault()
+
+    try {
+      const user = await signInWithGoogle()
+      const res = await customAxios.post('/auth/google', {
+        access_token: user.accessToken
+      })
+
+      setUser(res.data.user)
+      storeInSession('user', res.data.user)
+      storeInSession('accessToken', res.data.accessToken)
+    } catch (error) {
+      console.log(error)
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          'Something went wrong'
+      )
+    }
+  }
+
+  return user ? (
+    <Navigate to='/' />
+  ) : (
     <PageAnimation keyValue={type}>
       <section className='h-cover flex items-center justify-center'>
-        <form className='w-[80%] max-w-[400px]'>
+        <Toaster />
+        <form id='formElement' className='w-[80%] max-w-[400px]'>
           <h1 className='text-4xl font-gelasio capitalize text-center mb-16'>
             {type === 'sign-in' ? 'Welcome Back' : 'Join Us Today'}
           </h1>
           {/* Form fields */}
-          {type !== 'sign-in' ? (
+          {type !== 'sign-in' && (
             <InputBox
               name='fullname'
               type='text'
               placeholder='Full Name'
               icon='user'
             />
-          ) : (
-            ''
           )}
           <InputBox
             name='email'
@@ -35,9 +95,14 @@ const UserAuthForm = ({ type }) => {
           />
 
           {/* Submit button */}
-          <button className='btn-dark center mt-14' type='submit'>
+          <button
+            className='btn-dark center mt-14'
+            type='submit'
+            onClick={handleSubmit}
+          >
             {type.replace('-', ' ')}
           </button>
+
           <div className='relative w-full flex items-center gap-2 my-4 opacity-30 uppercase text-black font-bold'>
             <hr className='w-1/2 border-black' />
             <p>or</p>
@@ -45,7 +110,10 @@ const UserAuthForm = ({ type }) => {
           </div>
 
           {/* Google button */}
-          <button className='btn-dark flex items-center justify-center gap-4 w-[90%] center'>
+          <button
+            className='btn-dark flex items-center justify-center gap-4 w-[90%] center'
+            onClick={handleGoogleAuth}
+          >
             <img src='/imgs/google.png' className='w-5' />
             countinue with google
           </button>

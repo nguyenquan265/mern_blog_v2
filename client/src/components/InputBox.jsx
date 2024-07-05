@@ -16,15 +16,13 @@ const InputBox = ({ name, type, id, value, placeholder, icon }) => {
         className='input-box'
       />
       <i className={`fi fi-rr-${icon} input-icon`}></i>
-      {type === 'password' ? (
+      {type === 'password' && (
         <i
           className={`fi ${
             passwordVisible ? 'fi-rr-eye-crossed' : 'fi-rr-eye'
           } input-icon left-[auto] right-4 cursor-pointer`}
           onClick={() => setPasswordVisible(!passwordVisible)}
         ></i>
-      ) : (
-        ''
       )}
     </div>
   )
