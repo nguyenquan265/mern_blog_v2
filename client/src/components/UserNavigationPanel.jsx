@@ -5,12 +5,13 @@ import { AuthContext } from '../context/AuthProvider'
 import { removeFromSession } from '../utils/session'
 
 const UserNavigationPanel = () => {
-  const { user, setUser } = useContext(AuthContext)
+  const { user, setUser, setAccessToken } = useContext(AuthContext)
 
   const signOut = () => {
     removeFromSession('user')
     removeFromSession('accessToken')
     setUser(null)
+    setAccessToken(null)
   }
 
   return (

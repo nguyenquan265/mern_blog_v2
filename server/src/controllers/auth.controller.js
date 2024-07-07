@@ -130,3 +130,5 @@ export const googleAuth = catchAsync(async (req, res, next) => {
       .json({ status: 'success', user: user.personal_info, accessToken })
   }
 })
+
+export const getMe = catchAsync(async (req, res, next) => {})

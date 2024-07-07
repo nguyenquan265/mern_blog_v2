@@ -8,8 +8,8 @@ import { useContext } from 'react'
 import { AuthContext } from '../context/AuthProvider'
 import { signInWithGoogle } from '../firebase/firebase'
 
-const UserAuthForm = ({ type }) => {
-  const { user, setUser } = useContext(AuthContext)
+const UserAuthFormPage = ({ type }) => {
+  const { user, setUser, setAccessToken } = useContext(AuthContext)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -28,6 +28,7 @@ const UserAuthForm = ({ type }) => {
 
       formElement.reset()
       setUser(res.data.user)
+      setAccessToken(res.data.accessToken)
       storeInSession('user', res.data.user)
       storeInSession('accessToken', res.data.accessToken)
     } catch (error) {
@@ -50,6 +51,7 @@ const UserAuthForm = ({ type }) => {
       })
 
       setUser(res.data.user)
+      setAccessToken(res.data.accessToken)
       storeInSession('user', res.data.user)
       storeInSession('accessToken', res.data.accessToken)
     } catch (error) {
@@ -140,4 +142,4 @@ const UserAuthForm = ({ type }) => {
   )
 }
 
-export default UserAuthForm
+export default UserAuthFormPage
