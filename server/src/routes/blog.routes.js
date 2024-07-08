@@ -4,6 +4,6 @@ import uploadMiddleware from '~/middlewares/upload.middleware'
 
 const router = Router()
 
-router.post('/upload', uploadMiddleware.single('banner'), uploadBanner)
+router.post('/uploadBanner', uploadMiddleware.single('banner'), uploadBanner)
 
 export default router

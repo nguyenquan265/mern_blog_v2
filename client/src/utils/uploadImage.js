@@ -7,7 +7,7 @@ const uploadImage = async (img) => {
   formData.append('banner', img)
 
   try {
-    const res = await customAxios.post('/blogs/upload', formData, {
+    const res = await customAxios.post('/blogs/uploadBanner', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }

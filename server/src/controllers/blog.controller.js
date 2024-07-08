@@ -1,10 +1,9 @@
 import cloudinary from '~/config/cloudinary'
 import catchAsync from '~/utils/catchAsync'
 import fs from 'fs'
-import util from 'util'
 import path from 'path'
-
-const writeFile = util.promisify(fs.writeFile)
+import ApiError from '~/utils/ApiError'
+import writeFile from '~/utils/writeFile'
 
 export const uploadBanner = catchAsync(async (req, res, next) => {
   if (req.file) {
@@ -26,7 +25,7 @@ export const uploadBanner = catchAsync(async (req, res, next) => {
     return res
       .status(200)
       .json({ status: 'success', imgURL: result.secure_url })
+  } else {
+    throw new ApiError(400, 'No file uploaded')
   }
-
-  return res.status(200).json({ status: 'success' })
 })
