@@ -115,7 +115,7 @@ const UserAuthFormPage = ({ type }) => {
             className='btn-dark flex items-center justify-center gap-4 w-[90%] center'
             onClick={handleGoogleAuth}
           >
-            <img src='/imgs/google.png' className='w-5' />
+            <img src='/imgs/google.png' className='w-5' loading='lazy' />
             countinue with google
           </button>
 

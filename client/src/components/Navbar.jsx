@@ -14,7 +14,7 @@ const Navbar = () => {
       <nav className='navbar'>
         {/* Logo */}
         <Link to='/' className='flex-none w-10'>
-          <img src='/imgs/logo.png' className='w-full' />
+          <img src='/imgs/logo.png' className='w-full' loading='lazy' />
         </Link>
 
         {/* Search input */}
@@ -65,6 +65,7 @@ const Navbar = () => {
                   <img
                     src={user.profile_img}
                     className='w-full h-full object-cover rounded-full'
+                    loading='lazy'
                   />
                 </button>
                 {userNavigationPanelVisible && <UserNavigationPanel />}

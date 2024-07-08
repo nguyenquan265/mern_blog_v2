@@ -62,6 +62,7 @@ const BlogEditor = () => {
                 <img
                   src={blog.banner || '/imgs/blog-banner.png'}
                   className='z-20'
+                  loading='lazy'
                   onError={(e) => {
                     e.target.src = '/imgs/blog-banner.png'
                   }}
