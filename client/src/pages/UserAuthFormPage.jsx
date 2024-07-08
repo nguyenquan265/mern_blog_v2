@@ -1,7 +1,7 @@
 import { Link, Navigate } from 'react-router-dom'
 import InputBox from '../components/InputBox'
 import PageAnimation from '../common/PageAnimation'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 import customAxios from '../utils/customAxios'
 import { storeInSession } from '../utils/session'
 import { useContext } from 'react'
@@ -69,7 +69,6 @@ const UserAuthFormPage = ({ type }) => {
   ) : (
     <PageAnimation keyValue={type}>
       <section className='h-cover flex items-center justify-center'>
-        <Toaster />
         <form id='formElement' className='w-[80%] max-w-[400px]'>
           <h1 className='text-4xl font-gelasio capitalize text-center mb-16'>
             {type === 'sign-in' ? 'Welcome Back' : 'Join Us Today'}

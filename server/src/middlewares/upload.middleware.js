@@ -1,5 +1,5 @@
 import multer from 'multer'
-import ApiError from './ApiError'
+import ApiError from '../utils/ApiError'
 
 const storage = multer.memoryStorage()
 
@@ -11,6 +11,10 @@ const multerFilter = (req, file, cb) => {
   }
 }
 
-const upload = multer({ storage, fileFilter: multerFilter })
+const uploadMiddleware = multer({
+  storage,
+  fileFilter: multerFilter,
+  limits: { fileSize: 2 * 1024 * 1024 }
+})
 
-export default upload
+export default uploadMiddleware

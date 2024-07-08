@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from 'react'
 import { getFromSession } from '../utils/session'
+import PageLoader from '../common/PageLoader'
 
 export const AuthContext = createContext()
 
@@ -29,7 +30,7 @@ const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{ user, setUser, accessToken, setAccessToken }}
     >
-      {loading ? <p>Loading...</p> : children}
+      {loading ? <PageLoader /> : children}
     </AuthContext.Provider>
   )
 }

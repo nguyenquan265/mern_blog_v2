@@ -3,6 +3,7 @@ import Navbar from './components/Navbar'
 import UserAuthFormPage from './pages/UserAuthFormPage'
 import AuthProvider from './context/AuthProvider'
 import EditorPage from './pages/EditorPage'
+import { Toaster } from 'react-hot-toast'
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
           </Route>
         </Routes>
       </BrowserRouter>
+      <Toaster />
     </AuthProvider>
   )
 }

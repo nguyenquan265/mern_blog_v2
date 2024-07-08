@@ -1,10 +1,39 @@
 import { Link } from 'react-router-dom'
 import PageAnimation from '../common/PageAnimation'
+import uploadImage from '../utils/uploadImage'
+import { useRef } from 'react'
+import toast from 'react-hot-toast'
 
 const BlogEditor = () => {
-  const handleUploadBanner = (e) => {
-    const file = e.target.files[0]
-    console.log(file)
+  const blogBanner = useRef(null)
+
+  const handleUploadBanner = async (e) => {
+    const img = e.target.files[0]
+
+    if (img) {
+      const loadingToast = toast.loading('Uploading banner...')
+
+      const imgURL = await uploadImage(img)
+      blogBanner.current.src = imgURL
+
+      toast.dismiss(loadingToast)
+    } else {
+      toast.error('No image selected')
+    }
+  }
+
+  const handleTitleEnterKey = (e) => {
+    if (e.key === 'Enter' || e.keyCode === 13) {
+      e.preventDefault()
+      e.target.blur()
+    }
+  }
+
+  const handleTitleChange = (e) => {
+    let input = e.target
+
+    input.style.height = 'auto'
+    input.style.height = input.scrollHeight + 'px'
   }
 
   return (
@@ -24,8 +53,12 @@ const BlogEditor = () => {
         <section>
           <div className='mx-auto max-w-[900px] w-full'>
             <div className='relative aspect-video hover:opacity-80 bg-white border-4 border-grey'>
-              <label htmlFor='uploadBanner'>
-                <img src='/imgs/blog-banner.png' className='z-20' />
+              <label htmlFor='uploadBanner' className='cursor-pointer'>
+                <img
+                  ref={blogBanner}
+                  src='/imgs/blog-banner.png'
+                  className='z-20'
+                />
                 <input
                   id='uploadBanner'
                   type='file'
@@ -35,6 +68,13 @@ const BlogEditor = () => {
                 />
               </label>
             </div>
+
+            <textarea
+              placeholder='Blog Title'
+              className='text-4xl font-medium w-full h-20 outline-none resize-none mt-10 leading-tight placeholder:opacity-40'
+              onKeyDown={handleTitleEnterKey}
+              onChange={handleTitleChange}
+            ></textarea>
           </div>
         </section>
       </PageAnimation>
