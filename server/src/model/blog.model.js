@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 const blogSchema = new mongoose.Schema(
   {
-    blog_id: {
+    slug: {
       type: String,
       required: true,
       unique: true

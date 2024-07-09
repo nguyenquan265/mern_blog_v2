@@ -4,14 +4,12 @@ const router = Router()
 
 import authRouter from './auth.routes'
 import blogRouter from './blog.routes'
-import fileRouter from './file.routes'
 
 router.use('/check', (req, res) => {
   res.status(200).json({ status: 'success', message: 'Server is running' })
 })
 router.use('/auth', authRouter)
 router.use('/blogs', blogRouter)
-router.use('/upload', fileRouter)
 router.all('*', (req, res, next) =>
   next(new ApiError(404, `Can't find ${req.originalUrl} on this server!`))
 )

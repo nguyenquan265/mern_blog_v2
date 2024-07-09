@@ -3,10 +3,13 @@ import PageAnimation from '../common/PageAnimation'
 import toast from 'react-hot-toast'
 import { EditorContext } from '../pages/EditorPage'
 import Tag from './Tag'
+import customAxios from '../utils/customAxios'
+import { useNavigate } from 'react-router-dom'
 
 const PublishForm = () => {
   const { blog, setBlog, setEditorState } = useContext(EditorContext)
   const tagLimit = 10
+  const navigate = useNavigate()
 
   const handleTitleKeyEvent = (e) => {
     if (e.key === 'Enter' || e.keyCode === 13) {
@@ -36,6 +39,50 @@ const PublishForm = () => {
       }
 
       e.target.value = ''
+    }
+  }
+
+  const publishBlog = async (e) => {
+    if (e.target.classList.contains('disable')) {
+      return
+    }
+
+    if (!blog.banner) {
+      return toast.error('Please upload a banner')
+    }
+
+    if (!blog.title) {
+      return toast.error('Please enter a title')
+    }
+
+    if (!blog.des || blog.des.length > 200) {
+      return toast.error('Description should be less than 200 characters')
+    }
+
+    if (blog.tags.length === 0) {
+      return toast.error('Please add some tags')
+    }
+
+    const loadingToast = toast.loading('Publishing blog...')
+    e.target.classList.add('disable')
+
+    try {
+      const res = await customAxios.post('/blogs/createBlog', {
+        ...blog,
+        draft: false
+      })
+
+      toast.dismiss(loadingToast)
+      e.target.classList.remove('disable')
+
+      setTimeout(() => {
+        navigate('/')
+      }, 500)
+    } catch (error) {
+      console.log(error)
+      toast.dismiss(loadingToast)
+      e.target.classList.remove('disable')
+      toast.error('Failed to publish blog')
     }
   }
 
@@ -112,7 +159,9 @@ const PublishForm = () => {
           </p>
 
           {/* Publish button */}
-          <button className='btn-dark px-8'>Publish</button>
+          <button className='btn-dark px-8' onClick={publishBlog}>
+            Publish
+          </button>
         </div>
       </section>
     </PageAnimation>

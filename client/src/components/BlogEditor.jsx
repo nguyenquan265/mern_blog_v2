@@ -18,42 +18,6 @@ const BlogEditor = () => {
     useContext(EditorContext)
 
   useEffect(() => {
-    // const editor = new EditorJS({
-    //   holder: 'textEditor',
-    //   data: '',
-    //   tools: {
-    //     embed: Embed,
-    //     header: {
-    //       class: Header,
-    //       config: {
-    //         placeholder: 'Enter a header',
-    //         levels: [2, 3],
-    //         defaultLevel: 2
-    //       }
-    //     },
-    //     image: {
-    //       class: Image,
-    //       config: {
-    //         endpoints: {
-    //           byFile: 'http://localhost:8000/api/v1/upload/uploadByFile',
-    //           byUrl: 'http://localhost:8000/api/v1/upload/uploadByURL'
-    //         }
-    //       }
-    //     },
-    //     inlineCode: InlineCode,
-    //     list: {
-    //       class: List,
-    //       inlineToolbar: true
-    //     },
-    //     marker: Marker,
-    //     quote: {
-    //       class: Quote,
-    //       inlineToolbar: true
-    //     }
-    //   },
-    //   placeholder: 'Start writing your blog...'
-    // })
-
     setTextEditor(
       new EditorJS({
         holder: 'textEditor',
@@ -71,9 +35,12 @@ const BlogEditor = () => {
           image: {
             class: Image,
             config: {
-              endpoints: {
-                byFile: 'http://localhost:8000/api/v1/upload/uploadByFile',
-                byUrl: 'http://localhost:8000/api/v1/upload/uploadByURL'
+              uploader: {
+                async uploadByFile(file) {
+                  return uploadImage(file).then((res) => {
+                    return { success: 1, file: { url: res } }
+                  })
+                }
               }
             }
           },
@@ -91,12 +58,6 @@ const BlogEditor = () => {
         placeholder: 'Start writing your blog...'
       })
     )
-
-    // return () => {
-    //   editor.isReady.then(() => {
-    //     editor.destroy()
-    //   })
-    // }
   }, [])
 
   const handleUploadBanner = async (e) => {
@@ -131,13 +92,13 @@ const BlogEditor = () => {
   }
 
   const handlePublish = async () => {
-    // if (!blog.banner) {
-    //   return toast.error('Please upload a banner')
-    // }
+    if (!blog.banner) {
+      return toast.error('Please upload a banner')
+    }
 
-    // if (!blog.title) {
-    //   return toast.error('Please enter a title')
-    // }
+    if (!blog.title) {
+      return toast.error('Please enter a title')
+    }
 
     if (textEditor.isReady) {
       try {
@@ -147,7 +108,7 @@ const BlogEditor = () => {
           return toast.error('Please write some content')
         }
 
-        setBlog({ ...blog, content: data.blocks })
+        setBlog({ ...blog, content: data })
         setEditorState('publish')
       } catch (error) {
         console.log(error)
@@ -155,6 +116,8 @@ const BlogEditor = () => {
       }
     }
   }
+
+  const handleSaveDraft = async (e) => {}
 
   return (
     <>
@@ -169,7 +132,9 @@ const BlogEditor = () => {
           <button className='btn-dark py-2' onClick={handlePublish}>
             Publish
           </button>
-          <button className='btn-light py-2'>Save Draft</button>
+          <button className='btn-light py-2' onClick={handleSaveDraft}>
+            Save Draft
+          </button>
         </div>
       </nav>
 

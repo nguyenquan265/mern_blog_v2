@@ -4,10 +4,10 @@ import toast from 'react-hot-toast'
 const uploadImage = async (img) => {
   let imageURL = '/imgs/blog-banner.png'
   const formData = new FormData()
-  formData.append('banner', img)
+  formData.append('image', img)
 
   try {
-    const res = await customAxios.post('/blogs/uploadBanner', formData, {
+    const res = await customAxios.post('/blogs/uploadImage', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
