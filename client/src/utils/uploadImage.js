@@ -2,9 +2,9 @@ import customAxios from './customAxios'
 import toast from 'react-hot-toast'
 
 const uploadImage = async (img) => {
-  let imageURL = '/imgs/blog-banner.png'
-  const formData = new FormData()
-  formData.append('image', img)
+  let imageURL = '/imgs/blog-banner.png' // Default image
+  const formData = new FormData() // Create a new FormData instance
+  formData.append('image', img) // Append the file to the FormData instance
 
   try {
     const res = await customAxios.post('/blogs/uploadImage', formData, {

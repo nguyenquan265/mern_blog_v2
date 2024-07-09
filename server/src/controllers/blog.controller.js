@@ -9,12 +9,6 @@ import { Blog, User } from '~/model'
 
 export const uploadImage = catchAsync(async (req, res, next) => {
   if (req.file) {
-    // if (req.user.photo) {
-    //   await cloudinary.uploader.destroy(
-    //     req.user.photo_publicId || req.user.photo.split('/').pop().split('.')[0]
-    //   )
-    // }
-
     const tempFilePath = path.join(__dirname, req.file.originalname)
     await writeFile(tempFilePath, req.file.buffer)
 
@@ -40,6 +34,7 @@ export const createBlog = catchAsync(async (req, res, next) => {
     throw new ApiError(400, 'Please enter a title')
   }
 
+  // If blog is not a draft then validate other fields
   if (!draft) {
     if (!banner) {
       throw new ApiError(400, 'Please upload a banner')
@@ -56,11 +51,13 @@ export const createBlog = catchAsync(async (req, res, next) => {
     if (!tags || tags.length > 10) {
       throw new ApiError(400, 'Maximum 10 tags are allowed')
     } else {
+      // Convert tags to lowercase and remove duplicates
       tags = tags.map((tag) => tag.toLowerCase())
       tags = [...new Set(tags)]
     }
   }
 
+  // Create slug
   const slug = title.toLowerCase().split(' ').join('-') + '-' + nanoid()
 
   const blog = await Blog.create({
@@ -75,8 +72,8 @@ export const createBlog = catchAsync(async (req, res, next) => {
   })
 
   await User.findByIdAndUpdate(authorId, {
-    $inc: { 'account_info.total_posts': blog.draft ? 0 : 1 },
-    $push: { blogs: blog._id }
+    $inc: { 'account_info.total_posts': blog.draft ? 0 : 1 }, // Increment total_posts if blog is published
+    $push: { blogs: blog._id } // Add blog to user's blogs array
   })
 
   res.status(200).json({ status: 'success', id: blog.slug })

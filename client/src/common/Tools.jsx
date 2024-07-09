@@ -7,6 +7,7 @@ import Marker from '@editorjs/marker'
 import Quote from '@editorjs/quote'
 import uploadImage from '../utils/uploadImage'
 
+// Tools for EditorJS
 const Tools = {
   embed: Embed,
   header: {
@@ -21,6 +22,7 @@ const Tools = {
     class: Image,
     config: {
       uploader: {
+        // Custom uploader
         async uploadByFile(file) {
           return uploadImage(file).then((res) => {
             return { success: 1, file: { url: res } }

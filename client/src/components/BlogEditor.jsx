@@ -14,6 +14,7 @@ const BlogEditor = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
+    // Initialize the text editor
     if (!textEditor.isReady) {
       setTextEditor(
         new EditorJS({
@@ -26,6 +27,7 @@ const BlogEditor = () => {
     }
   }, [])
 
+  // Upload banner image
   const handleUploadBanner = async (e) => {
     const img = e.target.files[0]
 
@@ -33,7 +35,7 @@ const BlogEditor = () => {
       const loadingToast = toast.loading('Uploading banner...')
 
       const imgURL = await uploadImage(img)
-      setBlog({ ...blog, banner: imgURL })
+      setBlog({ ...blog, banner: imgURL }) // Set banner image to blog object
 
       toast.dismiss(loadingToast)
     } else {
@@ -41,6 +43,7 @@ const BlogEditor = () => {
     }
   }
 
+  // When user presses Enter key, blur the textarea
   const handleTitleKeyEvent = (e) => {
     if (e.key === 'Enter' || e.keyCode === 13) {
       e.preventDefault()
@@ -48,15 +51,17 @@ const BlogEditor = () => {
     }
   }
 
+  // Handle title change
   const handleTitleChange = (e) => {
     let input = e.target
 
-    input.style.height = 'auto'
-    input.style.height = input.scrollHeight + 'px'
+    input.style.height = 'auto' // Reset the height
+    input.style.height = input.scrollHeight + 'px' // Set the height to the scroll height when user types
 
-    setBlog({ ...blog, title: input.value })
+    setBlog({ ...blog, title: input.value }) // Set the title to blog object
   }
 
+  // Prepare the blog object to publish and change the editor state to publish (navigate to PublishForm component)
   const handlePublish = async () => {
     if (!blog.banner) {
       return toast.error('Please upload a banner')
@@ -74,7 +79,7 @@ const BlogEditor = () => {
           return toast.error('Please write some content')
         }
 
-        setBlog({ ...blog, content: data })
+        setBlog({ ...blog, content: data }) // Set the content to blog object
         setEditorState('publish')
       } catch (error) {
         console.log(error)
@@ -83,6 +88,7 @@ const BlogEditor = () => {
     }
   }
 
+  // Save the blog as a draft
   const handleSaveDraft = async (e) => {
     if (e.target.classList.contains('disable')) {
       return
@@ -99,7 +105,7 @@ const BlogEditor = () => {
       try {
         const data = await textEditor.save()
 
-        setBlog({ ...blog, content: data })
+        setBlog({ ...blog, content: data }) // Set the content to blog object
 
         await customAxios.post('/blogs/createBlog', {
           ...blog,

@@ -11,6 +11,7 @@ const PublishForm = () => {
   const tagLimit = 10
   const navigate = useNavigate()
 
+  // When user presses Enter key, blur the textarea
   const handleTitleKeyEvent = (e) => {
     if (e.key === 'Enter' || e.keyCode === 13) {
       e.preventDefault()
@@ -18,6 +19,7 @@ const PublishForm = () => {
     }
   }
 
+  // When user presses Enter key or comma, add tag
   const handleTagKeyEvent = (e) => {
     if (
       e.key === 'Enter' ||
@@ -30,7 +32,7 @@ const PublishForm = () => {
 
       if (blog.tags.length < tagLimit) {
         if (newTag && !blog.tags.includes(newTag)) {
-          setBlog({ ...blog, tags: [...blog.tags, newTag] })
+          setBlog({ ...blog, tags: [...blog.tags, newTag] }) // Add tag to the blog object
         } else {
           toast.error('Tag already exists')
         }
@@ -42,6 +44,7 @@ const PublishForm = () => {
     }
   }
 
+  // Publish blog
   const publishBlog = async (e) => {
     if (e.target.classList.contains('disable')) {
       return

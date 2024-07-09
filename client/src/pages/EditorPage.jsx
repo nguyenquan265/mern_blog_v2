@@ -17,9 +17,9 @@ export const EditorContext = createContext()
 
 const EditorPage = () => {
   const { accessToken } = useContext(AuthContext)
-  const [blog, setBlog] = useState(blogStructure)
-  const [editorState, setEditorState] = useState('editor')
-  const [textEditor, setTextEditor] = useState({ isReady: false })
+  const [blog, setBlog] = useState(blogStructure) // Blog object
+  const [editorState, setEditorState] = useState('editor') // editor or publish
+  const [textEditor, setTextEditor] = useState({ isReady: false }) // EditorJS instance
 
   if (!accessToken) {
     return <Navigate to='/signin' />
