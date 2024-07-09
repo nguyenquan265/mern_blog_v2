@@ -1,63 +1,29 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import PageAnimation from '../common/PageAnimation'
 import uploadImage from '../utils/uploadImage'
 import { useContext, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { EditorContext } from '../pages/EditorPage'
 import EditorJS from '@editorjs/editorjs'
-import Embed from '@editorjs/embed'
-import Header from '@editorjs/header'
-import Image from '@editorjs/image'
-import InlineCode from '@editorjs/inline-code'
-import List from '@editorjs/list'
-import Marker from '@editorjs/marker'
-import Quote from '@editorjs/quote'
+import Tools from '../common/Tools'
+import customAxios from '../utils/customAxios'
 
 const BlogEditor = () => {
   const { blog, setBlog, textEditor, setTextEditor, setEditorState } =
     useContext(EditorContext)
+  const navigate = useNavigate()
 
   useEffect(() => {
-    setTextEditor(
-      new EditorJS({
-        holder: 'textEditor',
-        data: blog.content || '',
-        tools: {
-          embed: Embed,
-          header: {
-            class: Header,
-            config: {
-              placeholder: 'Enter a header',
-              levels: [2, 3],
-              defaultLevel: 2
-            }
-          },
-          image: {
-            class: Image,
-            config: {
-              uploader: {
-                async uploadByFile(file) {
-                  return uploadImage(file).then((res) => {
-                    return { success: 1, file: { url: res } }
-                  })
-                }
-              }
-            }
-          },
-          inlineCode: InlineCode,
-          list: {
-            class: List,
-            inlineToolbar: true
-          },
-          marker: Marker,
-          quote: {
-            class: Quote,
-            inlineToolbar: true
-          }
-        },
-        placeholder: 'Start writing your blog...'
-      })
-    )
+    if (!textEditor.isReady) {
+      setTextEditor(
+        new EditorJS({
+          holder: 'textEditor',
+          data: blog.content || '',
+          tools: Tools,
+          placeholder: 'Start writing your blog...'
+        })
+      )
+    }
   }, [])
 
   const handleUploadBanner = async (e) => {
@@ -117,7 +83,43 @@ const BlogEditor = () => {
     }
   }
 
-  const handleSaveDraft = async (e) => {}
+  const handleSaveDraft = async (e) => {
+    if (e.target.classList.contains('disable')) {
+      return
+    }
+
+    if (!blog.title) {
+      return toast.error('Please enter a title before saving draft')
+    }
+
+    e.target.classList.add('disable')
+    const loadingToast = toast.loading('Saving draft...')
+
+    if (textEditor.isReady) {
+      try {
+        const data = await textEditor.save()
+
+        setBlog({ ...blog, content: data })
+
+        await customAxios.post('/blogs/createBlog', {
+          ...blog,
+          draft: true
+        })
+
+        e.target.classList.remove('disable')
+        toast.dismiss(loadingToast)
+
+        setTimeout(() => {
+          navigate('/')
+        }, 500)
+      } catch (error) {
+        console.log(error)
+        e.target.classList.remove('disable')
+        toast.dismiss(loadingToast)
+        toast.error('Failed to save content')
+      }
+    }
+  }
 
   return (
     <>

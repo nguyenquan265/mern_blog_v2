@@ -63,25 +63,25 @@ const PublishForm = () => {
       return toast.error('Please add some tags')
     }
 
-    const loadingToast = toast.loading('Publishing blog...')
     e.target.classList.add('disable')
+    const loadingToast = toast.loading('Publishing blog...')
 
     try {
-      const res = await customAxios.post('/blogs/createBlog', {
+      await customAxios.post('/blogs/createBlog', {
         ...blog,
         draft: false
       })
 
-      toast.dismiss(loadingToast)
       e.target.classList.remove('disable')
+      toast.dismiss(loadingToast)
 
       setTimeout(() => {
         navigate('/')
       }, 500)
     } catch (error) {
       console.log(error)
-      toast.dismiss(loadingToast)
       e.target.classList.remove('disable')
+      toast.dismiss(loadingToast)
       toast.error('Failed to publish blog')
     }
   }

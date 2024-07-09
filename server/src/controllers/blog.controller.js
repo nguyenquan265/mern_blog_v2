@@ -34,22 +34,32 @@ export const uploadImage = catchAsync(async (req, res, next) => {
 
 export const createBlog = catchAsync(async (req, res, next) => {
   const authorId = req.user._id
-  let { title, banner, des, tags, content, darft } = req.body
+  let { title, banner, des, tags, content, draft } = req.body
 
-  if (!title || !banner || !des || !tags || !content || !content.blocks) {
-    throw new ApiError(400, 'Please fill all fields')
+  if (!title) {
+    throw new ApiError(400, 'Please enter a title')
   }
 
-  if (des.length > 200) {
-    throw new ApiError(400, 'Description should be less than 200 characters')
-  }
+  if (!draft) {
+    if (!banner) {
+      throw new ApiError(400, 'Please upload a banner')
+    }
 
-  if (tags.length > 10) {
-    throw new ApiError(400, 'Maximum 10 tags are allowed')
-  }
+    if (!content || !content.blocks) {
+      throw new ApiError(400, 'Please write some content')
+    }
 
-  tags = tags.map((tag) => tag.toLowerCase())
-  tags = [...new Set(tags)]
+    if (!des || des.length > 200) {
+      throw new ApiError(400, 'Description should be less than 200 characters')
+    }
+
+    if (!tags || tags.length > 10) {
+      throw new ApiError(400, 'Maximum 10 tags are allowed')
+    } else {
+      tags = tags.map((tag) => tag.toLowerCase())
+      tags = [...new Set(tags)]
+    }
+  }
 
   const slug = title.toLowerCase().split(' ').join('-') + '-' + nanoid()
 
@@ -61,7 +71,7 @@ export const createBlog = catchAsync(async (req, res, next) => {
     tags,
     content,
     author: authorId,
-    draft: Boolean(darft)
+    draft: Boolean(draft)
   })
 
   await User.findByIdAndUpdate(authorId, {
