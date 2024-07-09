@@ -51,7 +51,7 @@ const PublishForm = () => {
         </button>
 
         {/* Preview */}
-        <div className='max-w-[550px] center'>
+        <div className='max-w-[550px] lg:max-w-[420px] xl:max-w-[550px] center'>
           <p className='text-dark-grey mb-1'>Preview</p>
           <div className='w-full aspect-video rounded-lg overflow-hidden bg-grey mt-4'>
             <img src={blog.banner} />
