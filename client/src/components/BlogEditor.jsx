@@ -57,7 +57,7 @@ const BlogEditor = () => {
     setTextEditor(
       new EditorJS({
         holder: 'textEditor',
-        data: '',
+        data: blog.content || '',
         tools: {
           embed: Embed,
           header: {
@@ -114,7 +114,7 @@ const BlogEditor = () => {
     }
   }
 
-  const handleEnterKey = (e) => {
+  const handleTitleKeyEvent = (e) => {
     if (e.key === 'Enter' || e.keyCode === 13) {
       e.preventDefault()
       e.target.blur()
@@ -131,25 +131,24 @@ const BlogEditor = () => {
   }
 
   const handlePublish = async () => {
-    if (!blog.banner) {
-      return toast.error('Please upload a banner')
-    }
+    // if (!blog.banner) {
+    //   return toast.error('Please upload a banner')
+    // }
 
-    if (!blog.title) {
-      return toast.error('Please enter a title')
-    }
+    // if (!blog.title) {
+    //   return toast.error('Please enter a title')
+    // }
 
     if (textEditor.isReady) {
       try {
         const data = await textEditor.save()
-        console.log(data)
 
         if (data.blocks.length === 0) {
           return toast.error('Please write some content')
         }
 
         setBlog({ ...blog, content: data.blocks })
-        // setEditorState('publish')
+        setEditorState('publish')
       } catch (error) {
         console.log(error)
         toast.error('Failed to save content')
@@ -202,13 +201,14 @@ const BlogEditor = () => {
             <textarea
               placeholder='Blog Title'
               className='text-4xl font-medium w-full h-20 outline-none resize-none mt-10 leading-tight placeholder:opacity-40'
-              onKeyDown={handleEnterKey}
+              onKeyDown={handleTitleKeyEvent}
               onChange={handleTitleChange}
+              defaultValue={blog?.title}
             ></textarea>
 
             <hr className='w-full opacity-10 my-5' />
 
-            {/*  */}
+            {/* Text editor */}
             <div id='textEditor' className='font-gelasio'></div>
           </div>
         </section>
