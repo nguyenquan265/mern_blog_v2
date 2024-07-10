@@ -3,6 +3,7 @@ import {
   createBlog,
   getLatestBlogs,
   getTrendingBlogs,
+  searchBlogs,
   uploadImage
 } from '~/controllers/blog.controller'
 import { protect } from '~/middlewares/auth.middleware'
@@ -10,6 +11,7 @@ import uploadMiddleware from '~/middlewares/upload.middleware'
 
 const router = Router()
 
+router.get('/search', searchBlogs)
 router.get('/latestBlogs', getLatestBlogs)
 router.get('/trendingBlogs', getTrendingBlogs)
 
