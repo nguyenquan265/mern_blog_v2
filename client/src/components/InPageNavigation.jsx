@@ -18,8 +18,8 @@ const InPageNavigation = ({
     setInPageNavIndex(i) // Set the active tab index
   }
 
+  // Set the active tab line to the default active tab
   useEffect(() => {
-    // Set the active tab line to the default active tab
     updateActiveTab(defaultActiveTabRef.current, defaultActiveIndex)
   }, [])
 
