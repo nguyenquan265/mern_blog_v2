@@ -2,6 +2,7 @@ import { Router } from 'express'
 import {
   createBlog,
   getLatestBlogs,
+  getTrendingBlogs,
   uploadImage
 } from '~/controllers/blog.controller'
 import { protect } from '~/middlewares/auth.middleware'
@@ -10,6 +11,7 @@ import uploadMiddleware from '~/middlewares/upload.middleware'
 const router = Router()
 
 router.get('/latestBlogs', getLatestBlogs)
+router.get('/trendingBlogs', getTrendingBlogs)
 
 router.use(protect)
 router.post('/uploadImage', uploadMiddleware.single('image'), uploadImage)
