@@ -3,6 +3,7 @@ import Navbar from './components/Navbar'
 import UserAuthFormPage from './pages/UserAuthFormPage'
 import AuthProvider from './context/AuthProvider'
 import EditorPage from './pages/EditorPage'
+import HomePage from './pages/HomePage'
 import { Toaster } from 'react-hot-toast'
 
 const App = () => {
@@ -12,6 +13,7 @@ const App = () => {
         <Routes>
           <Route path='/editor' element={<EditorPage />} />
           <Route path='/' element={<Navbar />}>
+            <Route index element={<HomePage />} />
             <Route
               path='signin'
               element={<UserAuthFormPage type='sign-in' />}
