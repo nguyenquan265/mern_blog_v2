@@ -6,8 +6,14 @@ const HomePage = () => {
     <PageAnimation>
       <section className='h-cover flex justify-center gap-10'>
         {/* Latest blogs */}
-        <div>
-          <InPageNavigation />
+        <div className='w-full'>
+          <InPageNavigation
+            routes={['home', 'trending blogs']}
+            defaultHidden={['trending blogs']}
+          >
+            <h1>Latest Blogs Here</h1>
+            <h1>Trending Blogs Here</h1>
+          </InPageNavigation>
         </div>
 
         {/* Filters and trending blogs */}
