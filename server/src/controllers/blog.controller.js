@@ -7,6 +7,20 @@ import writeFile from '~/utils/writeFile'
 import { nanoid } from 'nanoid'
 import { Blog, User } from '~/model'
 
+export const getLatestBlogs = catchAsync(async (req, res, next) => {
+  const blogs = await Blog.find({ draft: false })
+
+    .populate(
+      'author',
+      'personal_info.username personal_info.profile_img personal_info.fullname -_id'
+    )
+    .sort({ publishedAt: -1 })
+    .select('slug title des banner activity tags publishedAt -_id')
+    .limit(5)
+
+  res.status(200).json({ status: 'success', blogs })
+})
+
 export const uploadImage = catchAsync(async (req, res, next) => {
   if (req.file) {
     const tempFilePath = path.join(__dirname, req.file.originalname)
