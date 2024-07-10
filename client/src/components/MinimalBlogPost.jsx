@@ -6,7 +6,6 @@ const MinimalBlogPost = ({ blog, index }) => {
     publishedAt,
     title,
     slug,
-    activity: { total_likes },
     author: {
       personal_info: { fullname, username, profile_img }
     }
