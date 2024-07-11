@@ -34,7 +34,7 @@ const HomePage = () => {
   // Fetch latest blogs when pageState = 'home' or page is loaded
   const fetchLatestBlogs = async (page = 1) => {
     try {
-      const res = await customAxios('blogs/latestBlogs?page=' + page)
+      const res = await customAxios('/blogs/latestBlogs?page=' + page)
 
       if (!blogs) {
         formatData = {
@@ -60,7 +60,7 @@ const HomePage = () => {
   const fetchBlogsByTag = async (page = 1) => {
     try {
       const res = await customAxios(
-        `blogs/search?tag=${pageState}&page=${page}`
+        `/blogs/search?tag=${pageState}&page=${page}`
       )
 
       if (!blogs) {
@@ -86,7 +86,7 @@ const HomePage = () => {
   // Fetch trending blogs when page is loaded
   const fetchTrendingBlogs = async () => {
     try {
-      const res = await customAxios('blogs/trendingBlogs')
+      const res = await customAxios('/blogs/trendingBlogs')
 
       setTrendingBlogs(res.data.blogs)
     } catch (err) {
@@ -182,7 +182,7 @@ const HomePage = () => {
         </div>
 
         {/* Filters and trending blogs */}
-        <div className='min-w-[40%] lg:min-w-[400px] max-w-min border-l border-grey pl-8 pt-3 max-md:hidden'>
+        <div className='min-w-[40%] lg:min-w-[350px] max-w-min border-l border-grey pl-8 pt-3 max-md:hidden'>
           <div className='flex flex-col gap-10'>
             {/* Tags */}
             <div>

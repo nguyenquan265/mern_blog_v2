@@ -8,13 +8,25 @@ import { nanoid } from 'nanoid'
 import { Blog, User } from '~/model'
 
 export const searchBlogs = catchAsync(async (req, res, next) => {
-  const tag = req.query.tag
+  let queryObj = { draft: false }
+
+  // tag
+  if (req.query.tag) {
+    queryObj.tags = req.query.tag
+  }
+
+  // search
+  if (req.query.query) {
+    queryObj.title = { $regex: req.query.query, $options: 'i' }
+  }
+
+  // pagination
   const page = req.query.page * 1 || 1
-  const limit = req.query.limit * 1 || 1
+  const limit = req.query.limit * 1 || 2
   const skip = (page - 1) * limit
 
   const [blogs, totalDocs] = await Promise.all([
-    Blog.find({ tags: tag, draft: false })
+    Blog.find(queryObj)
       .populate(
         'author',
         'personal_info.username personal_info.profile_img personal_info.fullname -_id'
@@ -23,7 +35,7 @@ export const searchBlogs = catchAsync(async (req, res, next) => {
       .select('slug title des banner activity tags publishedAt -_id')
       .skip(skip)
       .limit(limit),
-    Blog.countDocuments({ tags: tag, draft: false })
+    Blog.countDocuments(queryObj)
   ])
 
   res.status(200).json({ status: 'success', blogs, page, totalDocs })

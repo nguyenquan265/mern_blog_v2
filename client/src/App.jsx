@@ -6,6 +6,7 @@ import EditorPage from './pages/EditorPage'
 import HomePage from './pages/HomePage'
 import { Toaster } from 'react-hot-toast'
 import NotFoundPage from './pages/NotFoundPage'
+import SeachPage from './pages/SeachPage'
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
               path='signup'
               element={<UserAuthFormPage type='sign-up' />}
             />
+            <Route path='/search/:query' element={<SeachPage />} />
             <Route path='*' element={<NotFoundPage />} />
           </Route>
         </Routes>
