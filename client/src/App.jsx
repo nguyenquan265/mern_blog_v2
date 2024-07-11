@@ -5,6 +5,7 @@ import AuthProvider from './context/AuthProvider'
 import EditorPage from './pages/EditorPage'
 import HomePage from './pages/HomePage'
 import { Toaster } from 'react-hot-toast'
+import NotFoundPage from './pages/NotFoundPage'
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
               path='signup'
               element={<UserAuthFormPage type='sign-up' />}
             />
+            <Route path='*' element={<NotFoundPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
