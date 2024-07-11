@@ -8,31 +8,46 @@ import { nanoid } from 'nanoid'
 import { Blog, User } from '~/model'
 
 export const searchBlogs = catchAsync(async (req, res, next) => {
-  const { tag } = req.query
+  const tag = req.query.tag
+  const page = req.query.page * 1 || 1
+  const limit = req.query.limit * 1 || 1
+  const skip = (page - 1) * limit
 
-  const blogs = await Blog.find({ tags: tag, draft: false })
-    .populate(
-      'author',
-      'personal_info.username personal_info.profile_img personal_info.fullname -_id'
-    )
-    .sort({ publishedAt: -1 })
-    .select('slug title des banner activity tags publishedAt -_id')
-    .limit(5)
+  const [blogs, totalDocs] = await Promise.all([
+    Blog.find({ tags: tag, draft: false })
+      .populate(
+        'author',
+        'personal_info.username personal_info.profile_img personal_info.fullname -_id'
+      )
+      .sort({ publishedAt: -1 })
+      .select('slug title des banner activity tags publishedAt -_id')
+      .skip(skip)
+      .limit(limit),
+    Blog.countDocuments({ tags: tag, draft: false })
+  ])
 
-  res.status(200).json({ status: 'success', blogs })
+  res.status(200).json({ status: 'success', blogs, page, totalDocs })
 })
 
 export const getLatestBlogs = catchAsync(async (req, res, next) => {
-  const blogs = await Blog.find({ draft: false })
-    .populate(
-      'author',
-      'personal_info.username personal_info.profile_img personal_info.fullname -_id'
-    )
-    .sort({ publishedAt: -1 })
-    .select('slug title des banner activity tags publishedAt -_id')
-    .limit(5)
+  const page = req.query.page * 1 || 1
+  const limit = req.query.limit * 1 || 5
+  const skip = (page - 1) * limit
 
-  res.status(200).json({ status: 'success', blogs })
+  const [blogs, totalDocs] = await Promise.all([
+    Blog.find({ draft: false })
+      .populate(
+        'author',
+        'personal_info.username personal_info.profile_img personal_info.fullname -_id'
+      )
+      .sort({ publishedAt: -1 })
+      .select('slug title des banner activity tags publishedAt -_id')
+      .skip(skip)
+      .limit(limit),
+    Blog.countDocuments({ draft: false })
+  ])
+
+  res.status(200).json({ status: 'success', blogs, page, totalDocs })
 })
 
 export const getTrendingBlogs = catchAsync(async (req, res, next) => {

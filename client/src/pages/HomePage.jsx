@@ -6,6 +6,7 @@ import customAxios from '../utils/customAxios'
 import BlogPostCard from '../components/BlogPostCard'
 import MinimalBlogPost from '../components/MinimalBlogPost'
 import NoDataMessage from '../components/NoDataMessage'
+import LoadMoreButton from '../components/LoadMoreButton'
 
 const categories = [
   'technology',
@@ -28,24 +29,55 @@ const HomePage = () => {
   const [blogs, setBlogs] = useState(null)
   const [trendingBlogs, setTrendingBlogs] = useState(null)
   const [pageState, setPageState] = useState('home')
+  let formatData
 
   // Fetch latest blogs when pageState = 'home' or page is loaded
-  const fetchLatestBlogs = async () => {
+  const fetchLatestBlogs = async (page = 1) => {
     try {
-      const res = await customAxios('blogs/latestBlogs')
+      const res = await customAxios('blogs/latestBlogs?page=' + page)
 
-      setBlogs(res.data.blogs)
+      if (!blogs) {
+        formatData = {
+          results: res.data.blogs,
+          page: res.data.page,
+          totalDocs: res.data.totalDocs
+        }
+      } else {
+        formatData = {
+          results: [...blogs.results, ...res.data.blogs],
+          page: res.data.page,
+          totalDocs: res.data.totalDocs
+        }
+      }
+
+      setBlogs(formatData)
     } catch (err) {
       console.log(err)
     }
   }
 
   // Fetch blogs by tag when pageState is not 'home'
-  const fetchBlogsByTag = async () => {
+  const fetchBlogsByTag = async (page = 1) => {
     try {
-      const res = await customAxios(`blogs/search?tag=${pageState}`)
+      const res = await customAxios(
+        `blogs/search?tag=${pageState}&page=${page}`
+      )
 
-      setBlogs(res.data.blogs)
+      if (!blogs) {
+        formatData = {
+          results: res.data.blogs,
+          page: res.data.page,
+          totalDocs: res.data.totalDocs
+        }
+      } else {
+        formatData = {
+          results: [...blogs.results, ...res.data.blogs],
+          page: res.data.page,
+          totalDocs: res.data.totalDocs
+        }
+      }
+
+      setBlogs(formatData)
     } catch (error) {
       console.log(error)
     }
@@ -99,25 +131,35 @@ const HomePage = () => {
             defaultHidden={['trending blogs']}
           >
             {/* Latest blog */}
-            {!blogs ? (
-              <ComponentLoader />
-            ) : blogs.length ? (
-              blogs.map((blog, i) => {
-                return (
-                  <PageAnimation
-                    transition={{ duration: 1, delay: i * 0.1 }}
-                    key={i}
-                  >
-                    <BlogPostCard
-                      content={blog}
-                      author={blog.author.personal_info}
-                    />
-                  </PageAnimation>
-                )
-              })
-            ) : (
-              <NoDataMessage message='No blogs published' />
-            )}
+            <>
+              {!blogs ? (
+                <ComponentLoader />
+              ) : blogs.results.length ? (
+                blogs.results.map((blog, i) => {
+                  return (
+                    <PageAnimation
+                      transition={{ duration: 1, delay: i * 0.1 }}
+                      key={i}
+                    >
+                      <BlogPostCard
+                        content={blog}
+                        author={blog.author.personal_info}
+                      />
+                    </PageAnimation>
+                  )
+                })
+              ) : (
+                <NoDataMessage message='No blogs published' />
+              )}
+
+              {/* Load more button */}
+              <LoadMoreButton
+                state={blogs}
+                fetchFunction={
+                  pageState === 'home' ? fetchLatestBlogs : fetchBlogsByTag
+                }
+              />
+            </>
 
             {/* Trending blogs (default hidden in md screen) */}
             {!trendingBlogs ? (
