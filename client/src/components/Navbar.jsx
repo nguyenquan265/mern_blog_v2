@@ -14,6 +14,8 @@ const Navbar = () => {
     const query = e.target.value
 
     if ((e.key === 'Enter' || e.keyCode === 13) && query) {
+      e.target.value = ''
+      e.target.blur()
       navigate(`/search/${query}`)
     }
   }

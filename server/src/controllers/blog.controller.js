@@ -20,6 +20,17 @@ export const searchBlogs = catchAsync(async (req, res, next) => {
     queryObj.title = { $regex: req.query.query, $options: 'i' }
   }
 
+  // author
+  if (req.query.authorId) {
+    const author = await User.findById(req.query.authorId)
+
+    if (!author) {
+      throw new ApiError(404, 'User not found')
+    }
+
+    queryObj.author = author._id
+  }
+
   // pagination
   const page = req.query.page * 1 || 1
   const limit = req.query.limit * 1 || 2
