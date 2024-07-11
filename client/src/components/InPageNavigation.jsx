@@ -1,16 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
 
+// export activeTabRef to be used in HomePage.jsx to set the active tab line to the active tab
+let activeTabLineRef
+export let activeTabRef
+
 const InPageNavigation = ({
   routes,
   defaultHidden,
   defaultActiveIndex = 0,
   children
 }) => {
-  const activeTabLineRef = useRef()
-  const defaultActiveTabRef = useRef()
+  activeTabLineRef = useRef()
+  activeTabRef = useRef()
   const [inPageNavIndex, setInPageNavIndex] = useState(defaultActiveIndex)
 
-  const updateActiveTab = (btn, i) => {
+  const updateActiveTabLine = (btn, i) => {
     const { offsetLeft, offsetWidth } = btn
 
     activeTabLineRef.current.style.left = `${offsetLeft}px` // Set the left position of the active tab line
@@ -20,7 +24,7 @@ const InPageNavigation = ({
 
   // Set the active tab line to the default active tab
   useEffect(() => {
-    updateActiveTab(defaultActiveTabRef.current, defaultActiveIndex)
+    updateActiveTabLine(activeTabRef.current, defaultActiveIndex)
   }, [])
 
   return (
@@ -29,14 +33,14 @@ const InPageNavigation = ({
         {routes.map((route, i) => {
           return (
             <button
-              ref={defaultActiveIndex === i ? defaultActiveTabRef : null}
+              ref={defaultActiveIndex === i ? activeTabRef : null}
               key={i}
               className={
                 'p-4 px-5 capitalize ' +
                 `${inPageNavIndex === i ? 'text-black' : 'text-dark-grey'}` +
-                `${defaultHidden.includes(route) && ' md:hidden'}`
+                `${defaultHidden.includes(route) && ' md:hidden'}` // Hide the tab in md screen if it is in defaultHidden
               }
-              onClick={(e) => updateActiveTab(e.target, i)}
+              onClick={(e) => updateActiveTabLine(e.target, i)}
             >
               {route}
             </button>
