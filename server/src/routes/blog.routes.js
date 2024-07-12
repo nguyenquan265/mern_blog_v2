@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import {
   createBlog,
+  getBlogBySlug,
   getLatestBlogs,
   getTrendingBlogs,
   searchBlogs,
@@ -14,6 +15,7 @@ const router = Router()
 router.get('/search', searchBlogs)
 router.get('/latestBlogs', getLatestBlogs)
 router.get('/trendingBlogs', getTrendingBlogs)
+router.get('/getBlogBySlug/:slug', getBlogBySlug)
 
 router.use(protect)
 router.post('/uploadImage', uploadMiddleware.single('image'), uploadImage)
