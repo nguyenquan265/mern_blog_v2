@@ -8,6 +8,7 @@ import { Toaster } from 'react-hot-toast'
 import NotFoundPage from './pages/NotFoundPage'
 import SeachPage from './pages/SeachPage'
 import ProfilePage from './pages/ProfilePage'
+import BlogPage from './pages/BlogPage'
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path='/editor' element={<EditorPage />} />
+          <Route path='/editor/:slug' element={<EditorPage />} />
           <Route path='/' element={<Navbar />}>
             <Route index element={<HomePage />} />
             <Route
@@ -27,6 +29,7 @@ const App = () => {
             />
             <Route path='search/:query' element={<SeachPage />} />
             <Route path='user/:id' element={<ProfilePage />} />
+            <Route path='blog/:slug' element={<BlogPage />} />
             <Route path='*' element={<NotFoundPage />} />
           </Route>
         </Routes>
