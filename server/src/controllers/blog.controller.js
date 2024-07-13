@@ -31,6 +31,11 @@ export const searchBlogs = catchAsync(async (req, res, next) => {
     queryObj.author = author._id
   }
 
+  // eliminateSlug
+  if (req.query.eliminateSlug) {
+    queryObj.slug = { $ne: req.query.eliminateSlug }
+  }
+
   // pagination
   const page = req.query.page * 1 || 1
   const limit = req.query.limit * 1 || 2
@@ -90,6 +95,42 @@ export const getTrendingBlogs = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: 'success', blogs })
 })
 
+export const getBlogBySlug = catchAsync(async (req, res, next) => {
+  const { slug } = req.params
+  const { draft, mode } = req.query
+
+  // Increment total_reads if mode is not edit
+  const incrementValue = mode !== 'edit' ? 1 : 0
+
+  // Find blog by slug and increment total_reads
+  const blog = await Blog.findOneAndUpdate(
+    { slug },
+    { $inc: { 'activity.total_reads': incrementValue } }
+  )
+    .populate(
+      'author',
+      'personal_info.username personal_info.profile_img personal_info.fullname'
+    )
+    .select('slug title des banner content activity tags publishedAt')
+
+  if (!blog) {
+    throw new ApiError(404, 'Blog not found')
+  }
+
+  // If blog is a draft then only author can access it
+  if (blog.draft && !draft) {
+    throw new ApiError(404, 'You can not access draft blog')
+  }
+
+  // If blog is a draft then total_reads will not increase else increment total_reads
+  await User.findByIdAndUpdate(blog.author._id, {
+    $inc: { 'account_info.total_reads': incrementValue }
+  })
+
+  res.status(200).json({ status: 'success', blog })
+})
+
+// protected route
 export const uploadImage = catchAsync(async (req, res, next) => {
   if (req.file) {
     const tempFilePath = path.join(__dirname, req.file.originalname)
@@ -111,7 +152,15 @@ export const uploadImage = catchAsync(async (req, res, next) => {
 
 export const createBlog = catchAsync(async (req, res, next) => {
   const authorId = req.user._id
-  let { title, banner, des, tags, content, draft } = req.body
+  let {
+    title,
+    banner,
+    des,
+    tags,
+    content,
+    draft,
+    slug: slugFromBrowser
+  } = req.body
 
   if (!title) {
     throw new ApiError(400, 'Please enter a title')
@@ -141,24 +190,42 @@ export const createBlog = catchAsync(async (req, res, next) => {
   }
 
   // Create slug
-  const slug = title.toLowerCase().split(' ').join('-') + '-' + nanoid()
+  const newSlug =
+    slugFromBrowser ||
+    title.toLowerCase().split(' ').join('-') + '-' + nanoid(5)
 
-  const blog = await Blog.create({
-    slug,
-    title,
-    banner,
-    des,
-    tags,
-    content,
-    author: authorId,
-    draft: Boolean(draft)
-  })
+  // If slug exists then update blog else create new blog
+  if (slugFromBrowser) {
+    const blog = await Blog.findOneAndUpdate(
+      { slug: newSlug },
+      {
+        title,
+        banner,
+        des,
+        tags,
+        content,
+        draft: draft ? draft : false
+      }
+    )
 
-  await User.findByIdAndUpdate(authorId, {
-    $inc: { 'account_info.total_posts': blog.draft ? 0 : 1 }, // Increment total_posts if blog is published
-    $push: { blogs: blog._id } // Add blog to user's blogs array
-  })
+    res.status(200).json({ status: 'success', id: blog.slug })
+  } else {
+    const blog = await Blog.create({
+      slug: newSlug,
+      title,
+      banner,
+      des,
+      tags,
+      content,
+      author: authorId,
+      draft: Boolean(draft)
+    })
 
-  res.status(200).json({ status: 'success', id: blog.slug })
-  // res.status(200).json({ status: 'success', blog })
+    await User.findByIdAndUpdate(authorId, {
+      $inc: { 'account_info.total_posts': blog.draft ? 0 : 1 }, // Increment total_posts if blog is published
+      $push: { blogs: blog._id } // Add blog to user's blogs array
+    })
+
+    res.status(200).json({ status: 'success', id: blog.slug })
+  }
 })

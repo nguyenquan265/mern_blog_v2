@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import PageAnimation from '../common/PageAnimation'
 import uploadImage from '../utils/uploadImage'
 import { useContext, useEffect } from 'react'
@@ -12,6 +12,7 @@ const BlogEditor = () => {
   const { blog, setBlog, textEditor, setTextEditor, setEditorState } =
     useContext(EditorContext)
   const navigate = useNavigate()
+  const { slug } = useParams()
 
   useEffect(() => {
     // Initialize the text editor
@@ -19,7 +20,7 @@ const BlogEditor = () => {
       setTextEditor(
         new EditorJS({
           holder: 'textEditor',
-          data: blog.content || '',
+          data: Array.isArray(blog.content) ? blog.content[0] : blog.content,
           tools: Tools,
           placeholder: 'Start writing your blog...'
         })
@@ -109,7 +110,8 @@ const BlogEditor = () => {
 
         await customAxios.post('/blogs/createBlog', {
           ...blog,
-          draft: true
+          draft: true, // Save as draft
+          slug // If slug is present, then it is an existing blog and we need to update it
         })
 
         e.target.classList.remove('disable')

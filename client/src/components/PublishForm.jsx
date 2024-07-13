@@ -4,10 +4,11 @@ import toast from 'react-hot-toast'
 import { EditorContext } from '../pages/EditorPage'
 import Tag from './Tag'
 import customAxios from '../utils/customAxios'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const PublishForm = () => {
   const { blog, setBlog, setEditorState } = useContext(EditorContext)
+  const { slug } = useParams()
   const tagLimit = 10
   const navigate = useNavigate()
 
@@ -72,6 +73,7 @@ const PublishForm = () => {
     try {
       await customAxios.post('/blogs/createBlog', {
         ...blog,
+        slug, // If slug exists, then it is an edit else new blog
         draft: false
       })
 
