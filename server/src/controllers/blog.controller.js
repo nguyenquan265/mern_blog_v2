@@ -5,7 +5,7 @@ import path from 'path'
 import ApiError from '~/utils/ApiError'
 import writeFile from '~/utils/writeFile'
 import { nanoid } from 'nanoid'
-import { Blog, User } from '~/model'
+import { Blog, Notification, User } from '~/model'
 
 export const searchBlogs = catchAsync(async (req, res, next) => {
   let queryObj = { draft: false }
@@ -48,7 +48,7 @@ export const searchBlogs = catchAsync(async (req, res, next) => {
         'personal_info.username personal_info.profile_img personal_info.fullname -_id'
       )
       .sort({ publishedAt: -1 })
-      .select('slug title des banner activity tags publishedAt -_id')
+      .select('slug title des banner activity tags publishedAt')
       .skip(skip)
       .limit(limit),
     Blog.countDocuments(queryObj)
@@ -69,7 +69,7 @@ export const getLatestBlogs = catchAsync(async (req, res, next) => {
         'personal_info.username personal_info.profile_img personal_info.fullname -_id'
       )
       .sort({ publishedAt: -1 })
-      .select('slug title des banner activity tags publishedAt -_id')
+      .select('slug title des banner activity tags publishedAt')
       .skip(skip)
       .limit(limit),
     Blog.countDocuments({ draft: false })
@@ -89,7 +89,7 @@ export const getTrendingBlogs = catchAsync(async (req, res, next) => {
       'activity.total_likes': -1,
       publishedAt: -1
     })
-    .select('slug title publishedAt -_id')
+    .select('slug title publishedAt')
     .limit(5)
 
   res.status(200).json({ status: 'success', blogs })
@@ -227,5 +227,40 @@ export const createBlog = catchAsync(async (req, res, next) => {
     })
 
     res.status(200).json({ status: 'success', id: blog.slug })
+  }
+})
+
+export const likeBlog = catchAsync(async (req, res, next) => {
+  const userId = req.user._id
+  const { blogId, isLiked } = req.body
+  const incrementValue = isLiked ? -1 : 1
+
+  const blog = await Blog.findByIdAndUpdate(
+    { _id: blogId },
+    { $inc: { 'activity.total_likes': incrementValue } }
+  )
+
+  if (!blog) {
+    throw new ApiError(404, 'Blog not found')
+  }
+
+  if (!isLiked) {
+    const notification = await Notification.create({
+      type: 'like',
+      blog: blogId,
+      notification_for: blog.author,
+      user: userId
+    })
+
+    return res.status(200).json({ status: 'success', blog, notification })
+  } else {
+    await Notification.findOneAndDelete({
+      type: 'like',
+      blog: blogId,
+      notification_for: blog.author,
+      user: userId
+    })
+
+    return res.status(200).json({ status: 'success', blog })
   }
 })

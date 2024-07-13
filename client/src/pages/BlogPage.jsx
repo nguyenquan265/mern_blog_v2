@@ -32,6 +32,7 @@ const BlogPage = () => {
   const [blog, setBlog] = useState(blogStructure)
   const [similarBlogs, setSimilarBlogs] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [isLiked, setIsLiked] = useState(false)
 
   const {
     title,
@@ -53,6 +54,7 @@ const BlogPage = () => {
       )
 
       setBlog(blogRes.data.blog)
+      setIsLiked(blogRes.data.blog.activity.total_likes ? true : false)
       setSimilarBlogs(similarBlogsRes.data.blogs)
       setLoading(false)
     } catch (error) {
@@ -77,7 +79,7 @@ const BlogPage = () => {
       {loading ? (
         <ComponentLoader />
       ) : (
-        <BlogContext.Provider value={{ blog, setBlog }}>
+        <BlogContext.Provider value={{ blog, setBlog, isLiked, setIsLiked }}>
           <div className='max-w-[900px] center py-10 max-lg:px-[5vw]'>
             {/* Banner */}
             <img src={banner} className='aspect-video' loading='lazy' />

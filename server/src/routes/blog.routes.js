@@ -4,6 +4,7 @@ import {
   getBlogBySlug,
   getLatestBlogs,
   getTrendingBlogs,
+  likeBlog,
   searchBlogs,
   uploadImage
 } from '~/controllers/blog.controller'
@@ -20,5 +21,6 @@ router.get('/getBlogBySlug/:slug', getBlogBySlug)
 router.use(protect)
 router.post('/uploadImage', uploadMiddleware.single('image'), uploadImage)
 router.post('/createBlog', createBlog)
+router.patch('/likeBlog', likeBlog)
 
 export default router
