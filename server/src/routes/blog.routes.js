@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import {
+  addComment,
   createBlog,
   getBlogBySlug,
   getLatestBlogs,
@@ -22,5 +23,6 @@ router.use(protect)
 router.post('/uploadImage', uploadMiddleware.single('image'), uploadImage)
 router.post('/createBlog', createBlog)
 router.patch('/likeBlog', likeBlog)
+router.post('/addComment', addComment)
 
 export default router

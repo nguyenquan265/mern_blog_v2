@@ -5,7 +5,7 @@ import path from 'path'
 import ApiError from '~/utils/ApiError'
 import writeFile from '~/utils/writeFile'
 import { nanoid } from 'nanoid'
-import { Blog, Notification, User } from '~/model'
+import { Blog, Comment, Notification, User } from '~/model'
 
 export const searchBlogs = catchAsync(async (req, res, next) => {
   let queryObj = { draft: false }
@@ -263,4 +263,50 @@ export const likeBlog = catchAsync(async (req, res, next) => {
 
     return res.status(200).json({ status: 'success', blog })
   }
+})
+
+export const addComment = catchAsync(async (req, res, next) => {
+  const userId = req.user._id
+  const { blogId, comment, blogAuthor } = req.body
+
+  if (!comment) {
+    throw new ApiError(400, 'Comment cannot be empty')
+  }
+
+  const newComment = await Comment.create({
+    blog_id: blogId,
+    blog_author: blogAuthor,
+    comment,
+    commented_by: userId
+  })
+
+  await Blog.findByIdAndUpdate(
+    { _id: blogId },
+    {
+      $push: { comments: newComment._id },
+      $inc: {
+        'activity.total_comments': 1,
+        'activity.total_parent_comments': 1
+      }
+    }
+  )
+
+  await Notification.create({
+    type: 'comment',
+    blog: blogId,
+    notification_for: blogAuthor,
+    user: userId,
+    comment: newComment._id
+  })
+
+  res.status(200).json({
+    status: 'success',
+    commentStatus: {
+      comment: newComment.comment,
+      commentedAt: newComment.commentedAt,
+      _id: newComment._id,
+      userId,
+      children: newComment.children
+    }
+  })
 })
