@@ -111,7 +111,8 @@ export const getBlogBySlug = catchAsync(async (req, res, next) => {
       'author',
       'personal_info.username personal_info.profile_img personal_info.fullname'
     )
-    .select('slug title des banner content activity tags publishedAt')
+    .populate('likes', 'personal_info.username')
+    .select('slug title des banner content activity tags publishedAt likes')
 
   if (!blog) {
     throw new ApiError(404, 'Blog not found')
@@ -234,10 +235,14 @@ export const likeBlog = catchAsync(async (req, res, next) => {
   const userId = req.user._id
   const { blogId, isLiked } = req.body
   const incrementValue = isLiked ? -1 : 1
+  const updateLike = isLiked ? '$pull' : '$push'
 
   const blog = await Blog.findByIdAndUpdate(
     { _id: blogId },
-    { $inc: { 'activity.total_likes': incrementValue } }
+    {
+      $inc: { 'activity.total_likes': incrementValue },
+      [updateLike]: { likes: userId }
+    }
   )
 
   if (!blog) {
@@ -280,24 +285,25 @@ export const addComment = catchAsync(async (req, res, next) => {
     commented_by: userId
   })
 
-  await Blog.findByIdAndUpdate(
-    { _id: blogId },
-    {
-      $push: { comments: newComment._id },
-      $inc: {
-        'activity.total_comments': 1,
-        'activity.total_parent_comments': 1
+  await Promise.all([
+    Blog.findByIdAndUpdate(
+      { _id: blogId },
+      {
+        $push: { comments: newComment._id },
+        $inc: {
+          'activity.total_comments': 1,
+          'activity.total_parent_comments': 1
+        }
       }
-    }
-  )
-
-  await Notification.create({
-    type: 'comment',
-    blog: blogId,
-    notification_for: blogAuthor,
-    user: userId,
-    comment: newComment._id
-  })
+    ),
+    Notification.create({
+      type: 'comment',
+      blog: blogId,
+      notification_for: blogAuthor,
+      user: userId,
+      comment: newComment._id
+    })
+  ])
 
   res.status(200).json({
     status: 'success',

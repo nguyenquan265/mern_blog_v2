@@ -8,22 +8,7 @@ import MinimalBlogPost from '../components/MinimalBlogPost'
 import NoDataMessage from '../components/NoDataMessage'
 import LoadMoreButton from '../components/LoadMoreButton'
 
-const categories = [
-  'technology',
-  'science',
-  'health',
-  'business',
-  'art',
-  'food',
-  'travel',
-  'fashion',
-  'sports',
-  'music',
-  'movies',
-  'books',
-  'animal',
-  'education'
-]
+const categories = ['reactjs', 'nextjs', 'javascript', 'typescript']
 
 const HomePage = () => {
   const [blogs, setBlogs] = useState(null)

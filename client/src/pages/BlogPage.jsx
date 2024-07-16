@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import customAxios from '../utils/customAxios'
 import PageAnimation from '../common/PageAnimation'
@@ -10,6 +10,7 @@ import BlogContent from '../components/BlogContent'
 import CommentsContainer, {
   fetchComments
 } from '../components/CommentsContainer'
+import { AuthContext } from '../context/AuthProvider'
 
 const blogStructure = {
   title: '',
@@ -36,7 +37,7 @@ const BlogPage = () => {
   const [similarBlogs, setSimilarBlogs] = useState(null)
   const [loading, setLoading] = useState(true)
   const [isLiked, setIsLiked] = useState(false)
-  const [commentsWrapper, setCommentsWrapper] = useState(true) // Show comments wrapper
+  const [commentsWrapper, setCommentsWrapper] = useState(false) // Show comments wrapper
   const [totalParentCommentsLoad, setTotalParentCommentsLoad] = useState(0) // Total parent comments loaded
 
   const {
@@ -48,12 +49,15 @@ const BlogPage = () => {
     },
     publishedAt
   } = blog
+  const { user } = useContext(AuthContext)
 
   const fetchBlog = async () => {
     try {
       // Fetch blog data
       const blogRes = await customAxios(`/blogs/getBlogBySlug/${slug}`)
-      console.log(blogRes)
+      const likesArr = blogRes.data.blog.likes.map(
+        (like) => like.personal_info.username
+      )
 
       // Fetch parent comments
       blogRes.data.blog.comments = await fetchComments({
@@ -67,7 +71,7 @@ const BlogPage = () => {
       )
 
       setBlog(blogRes.data.blog)
-      setIsLiked(blogRes.data.blog.activity.total_likes ? true : false)
+      setIsLiked(likesArr.includes(user?.username))
       setSimilarBlogs(similarBlogsRes.data.blogs)
       setLoading(false)
     } catch (error) {
@@ -81,7 +85,7 @@ const BlogPage = () => {
     setSimilarBlogs(null)
     setLoading(true)
     setIsLiked(false)
-    // setCommentsWrapper(false)
+    setCommentsWrapper(false)
     setTotalParentCommentsLoad(0)
   }
 
