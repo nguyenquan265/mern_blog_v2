@@ -9,6 +9,7 @@ import NotFoundPage from './pages/NotFoundPage'
 import SeachPage from './pages/SeachPage'
 import ProfilePage from './pages/ProfilePage'
 import BlogPage from './pages/BlogPage'
+import SideNav from './components/SideNav'
 
 const App = () => {
   return (
@@ -19,6 +20,13 @@ const App = () => {
           <Route path='/editor/:slug' element={<EditorPage />} />
           <Route path='/' element={<Navbar />}>
             <Route index element={<HomePage />} />
+            <Route path='settings' element={<SideNav />}>
+              <Route path='edit-profile' element={<h1>edit profile</h1>} />
+              <Route
+                path='change-password'
+                element={<h1>change password</h1>}
+              />
+            </Route>
             <Route
               path='signin'
               element={<UserAuthFormPage type='sign-in' />}

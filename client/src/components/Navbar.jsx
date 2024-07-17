@@ -22,7 +22,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className='navbar'>
+      <nav className='navbar z-50'>
         {/* Logo */}
         <Link to='/' className='flex-none w-10'>
           <img src='/imgs/logo.png' className='w-full' loading='lazy' />
