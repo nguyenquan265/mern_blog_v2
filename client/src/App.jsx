@@ -10,6 +10,7 @@ import SeachPage from './pages/SeachPage'
 import ProfilePage from './pages/ProfilePage'
 import BlogPage from './pages/BlogPage'
 import SideNav from './components/SideNav'
+import ChangePasswordPage from './pages/ChangePasswordPage'
 
 const App = () => {
   return (
@@ -22,10 +23,7 @@ const App = () => {
             <Route index element={<HomePage />} />
             <Route path='settings' element={<SideNav />}>
               <Route path='edit-profile' element={<h1>edit profile</h1>} />
-              <Route
-                path='change-password'
-                element={<h1>change password</h1>}
-              />
+              <Route path='change-password' element={<ChangePasswordPage />} />
             </Route>
             <Route
               path='signin'
