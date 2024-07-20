@@ -1,13 +1,14 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthProvider'
 import UserNavigationPanel from './UserNavigationPanel'
+import customAxios from '../utils/customAxios'
 
 const Navbar = () => {
   const [searchBoxVisible, setSearchBoxVisible] = useState(false)
   const [userNavigationPanelVisible, setUserNavigationPanelVisible] =
     useState(false)
-  const { user } = useContext(AuthContext)
+  const { user, setUser } = useContext(AuthContext)
   const navigate = useNavigate()
 
   const handleSearch = (e) => {
@@ -19,6 +20,25 @@ const Navbar = () => {
       navigate(`/search/${query}`)
     }
   }
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const res = await customAxios('/notifications/newNotifications')
+
+        setUser({
+          ...user,
+          newNotificationsAvailable: res.data.newNotificationsAvailable
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    if (user) {
+      fetchNotifications()
+    }
+  }, [])
 
   return (
     <>
@@ -58,14 +78,20 @@ const Navbar = () => {
             <p>Write</p>
           </Link>
 
-          {/* User button */}
+          {/* User panel and notification */}
           {user ? (
             <>
+              {/* Notification */}
               <Link to='/dashboard/notification'>
                 <button className='w-12 h-12 rounded-full bg-grey relative hover:bg-black/10'>
                   <i className='fi fi-rr-bell text-2xl block mt-1'></i>
+                  {user.newNotificationsAvailable && (
+                    <span className='bg-red w-3 h-3 rounded-full absolute z-10 top-2 right-2'></span>
+                  )}
                 </button>
               </Link>
+
+              {/* User panel */}
               <div
                 className='relative'
                 onClick={() =>
