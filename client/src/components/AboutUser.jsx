@@ -17,10 +17,9 @@ const AboutUser = ({ className, bio, social_links, joinedAt }) => {
                 <i
                   className={
                     'text-2xl hover:text-black fi ' +
-                    (ley !== 'website' ? `fi-brands-${key}` : 'fi-rr-globe')
+                    (key !== 'website' ? `fi-brands-${key}` : 'fi-rr-globe')
                   }
                 ></i>
-                {key}
               </Link>
             )
           )
