@@ -25,10 +25,11 @@ const BlogInteraction = () => {
   } = useContext(BlogContext)
   const { user, accessToken } = useContext(AuthContext)
 
-  const handleLike = async () => {
+  const handleLike = async (e) => {
     if (!user || !accessToken) {
       toast.error('Please login to like the post')
     } else {
+      e.target.setAttribute('disabled', 'disabled')
       setIsLiked((preValue) => !preValue)
 
       !isLiked ? total_likes++ : total_likes--
@@ -40,8 +41,11 @@ const BlogInteraction = () => {
           blogId: _id,
           isLiked
         })
+
+        e.target.removeAttribute('disabled')
       } catch (error) {
         console.log(error)
+        e.target.removeAttribute('disabled')
       }
     }
   }
