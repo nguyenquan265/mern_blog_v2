@@ -28,11 +28,11 @@ const SideNav = () => {
     if (pathName) {
       setShowSideNav(false)
 
-      pageStateTab.current.click()
+      pageStateTab.current?.click()
     } else {
       setShowSideNav(true)
 
-      sidebarIconTab.current.click()
+      sidebarIconTab.current?.click()
     }
   }, [pageState])
 
