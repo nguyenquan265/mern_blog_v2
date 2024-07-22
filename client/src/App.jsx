@@ -12,6 +12,7 @@ import BlogPage from './pages/BlogPage'
 import SideNav from './components/SideNav'
 import ChangePasswordPage from './pages/ChangePasswordPage'
 import EditProfilePage from './pages/EditProfilePage'
+import NotificationPage from './pages/NotificationPage'
 
 const App = () => {
   return (
@@ -25,6 +26,9 @@ const App = () => {
             <Route path='settings' element={<SideNav />}>
               <Route path='edit-profile' element={<EditProfilePage />} />
               <Route path='change-password' element={<ChangePasswordPage />} />
+            </Route>
+            <Route path='dashboard' element={<SideNav />}>
+              <Route path='notifications' element={<NotificationPage />} />
             </Route>
             <Route
               path='signin'

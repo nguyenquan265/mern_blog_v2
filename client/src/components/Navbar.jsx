@@ -8,7 +8,7 @@ const Navbar = () => {
   const [searchBoxVisible, setSearchBoxVisible] = useState(false)
   const [userNavigationPanelVisible, setUserNavigationPanelVisible] =
     useState(false)
-  const { user, setUser } = useContext(AuthContext)
+  const { user, setUser, accessToken } = useContext(AuthContext)
   const navigate = useNavigate()
 
   const handleSearch = (e) => {
@@ -24,7 +24,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const res = await customAxios('/notifications/newNotifications')
+        const res = await customAxios('/notifications/notificationsStatus')
 
         setUser({
           ...user,
@@ -38,7 +38,7 @@ const Navbar = () => {
     if (user) {
       fetchNotifications()
     }
-  }, [])
+  }, [accessToken])
 
   return (
     <>
@@ -82,7 +82,7 @@ const Navbar = () => {
           {user ? (
             <>
               {/* Notification */}
-              <Link to='/dashboard/notification'>
+              <Link to='/dashboard/notifications'>
                 <button className='w-12 h-12 rounded-full bg-grey relative hover:bg-black/10'>
                   <i className='fi fi-rr-bell text-2xl block mt-1'></i>
                   {user.newNotificationsAvailable && (
