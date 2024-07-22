@@ -165,9 +165,9 @@ const EditProfilePage = () => {
         <form id='updateProfileForm'>
           <h1 className='max-md:hidden'>Edit Profile</h1>
 
-          <div className='flex flex-col lg:flex-row items-start py-10 gap-8 lg:gap-10'>
+          <div className='flex flex-col py-10 gap-8 lg:gap-10'>
             {/* Profile image */}
-            <div className='max-lg:center mb-5'>
+            <div className='center mb-5'>
               <label
                 htmlFor='uploadImg'
                 id='profileImgLable'
@@ -188,7 +188,7 @@ const EditProfilePage = () => {
               />
 
               <button
-                className='btn-light mt-5 max-lg:center lg:w-full px-10'
+                className='btn-light mt-5 max-lg:center w-full px-10'
                 onClick={handleUploadImage}
               >
                 Upload

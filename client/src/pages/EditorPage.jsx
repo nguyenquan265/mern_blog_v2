@@ -20,7 +20,7 @@ export const EditorContext = createContext()
 
 const EditorPage = () => {
   const { slug } = useParams()
-  const { accessToken } = useContext(AuthContext)
+  const { user, accessToken } = useContext(AuthContext)
   const [blog, setBlog] = useState(blogStructure) // Blog object
   const [editorState, setEditorState] = useState('editor') // editor or publish
   const [textEditor, setTextEditor] = useState({ isReady: false }) // EditorJS instance
@@ -49,7 +49,7 @@ const EditorPage = () => {
     fetchBlog()
   }, [])
 
-  if (!accessToken) {
+  if (!user || !accessToken) {
     return <Navigate to='/signin' />
   }
 

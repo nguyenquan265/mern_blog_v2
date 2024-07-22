@@ -36,7 +36,7 @@ const SideNav = () => {
     }
   }, [pageState])
 
-  if (!accessToken) {
+  if (!user || !accessToken) {
     return <Navigate to='/signin' />
   }
 
