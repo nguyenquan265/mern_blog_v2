@@ -13,6 +13,7 @@ import SideNav from './components/SideNav'
 import ChangePasswordPage from './pages/ChangePasswordPage'
 import EditProfilePage from './pages/EditProfilePage'
 import NotificationPage from './pages/NotificationPage'
+import ManageBlogsPage from './pages/ManageBlogsPage'
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
             </Route>
             <Route path='dashboard' element={<SideNav />}>
               <Route path='notifications' element={<NotificationPage />} />
+              <Route path='blogs' element={<ManageBlogsPage />} />
             </Route>
             <Route
               path='signin'
