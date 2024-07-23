@@ -38,7 +38,7 @@ const InPageNavigation = ({
               className={
                 'p-4 px-5 capitalize ' +
                 `${inPageNavIndex === i ? 'text-black' : 'text-dark-grey'}` +
-                `${defaultHidden.includes(route) && ' md:hidden'}` // Hide the tab in md screen if it is in defaultHidden
+                `${defaultHidden?.includes(route) && ' md:hidden'}` // Hide the tab in md screen if it is in defaultHidden
               }
               onClick={(e) => updateActiveTabLine(e.target, i)}
             >
