@@ -11,6 +11,7 @@ import CommentsContainer, {
   fetchComments
 } from '../components/CommentsContainer'
 import { AuthContext } from '../context/AuthProvider'
+import NoDataMessage from '../components/NoDataMessage'
 
 const blogStructure = {
   title: '',
@@ -36,6 +37,7 @@ const BlogPage = () => {
   const [blog, setBlog] = useState(blogStructure)
   const [similarBlogs, setSimilarBlogs] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [isLiked, setIsLiked] = useState(false)
   const [commentsWrapper, setCommentsWrapper] = useState(false) // Show comments wrapper
   const [totalParentCommentsLoad, setTotalParentCommentsLoad] = useState(0) // Total parent comments loaded
@@ -77,6 +79,7 @@ const BlogPage = () => {
     } catch (error) {
       console.log(error)
       setLoading(false)
+      setError(error.response.data.message || 'Something went wrong!')
     }
   }
 
@@ -93,6 +96,8 @@ const BlogPage = () => {
     resetState()
     fetchBlog()
   }, [slug])
+
+  if (error) return <NoDataMessage message={error} />
 
   return (
     <PageAnimation>

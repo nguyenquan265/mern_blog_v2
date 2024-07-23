@@ -78,6 +78,7 @@ const BlogInteraction = () => {
         </div>
 
         <div className='flex gap-6 items-center'>
+          {/* Edit button */}
           {username === user?.username && (
             <Link
               to={`/editor/${slug}`}
@@ -86,6 +87,8 @@ const BlogInteraction = () => {
               Edit
             </Link>
           )}
+
+          {/* Share */}
           <Link
             to={`https://twitter.com/intent/tweet?text=Read ${title}&url=${location.href}`}
           >
