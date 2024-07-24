@@ -13,6 +13,8 @@ const InPageNavigation = ({
   activeTabLineRef = useRef()
   activeTabRef = useRef()
   const [inPageNavIndex, setInPageNavIndex] = useState(defaultActiveIndex)
+  const [isResizeEventAdd, setIsResizeEventAdd] = useState(false)
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
 
   const updateActiveTabLine = (btn, i) => {
     const { offsetLeft, offsetWidth } = btn
@@ -24,8 +26,29 @@ const InPageNavigation = ({
 
   // Set the active tab line to the default active tab
   useEffect(() => {
-    updateActiveTabLine(activeTabRef.current, defaultActiveIndex)
-  }, [])
+    // Set the active tab line to the default active tab if the screen width is greater than 766px and the active tab is not the default active tab
+    if (windowWidth > 766 && inPageNavIndex !== defaultActiveIndex) {
+      updateActiveTabLine(activeTabRef.current, defaultActiveIndex)
+    }
+
+    //  Add resize event listener to update the active tab line position
+    if (!isResizeEventAdd) {
+      window.addEventListener('resize', () => {
+        if (!isResizeEventAdd) {
+          setIsResizeEventAdd(true)
+        }
+
+        setWindowWidth(window.innerWidth)
+      })
+    }
+
+    // Remove resize event listener
+    return () => {
+      window.removeEventListener('resize', () => {
+        setWindowWidth(window.innerWidth)
+      })
+    }
+  }, [windowWidth])
 
   return (
     <>
