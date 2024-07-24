@@ -2,8 +2,10 @@ import { Router } from 'express'
 import {
   addComment,
   createBlog,
+  deleteBlogBySlug,
   getBlogBySlug,
   getLatestBlogs,
+  getMyBlogs,
   getTrendingBlogs,
   likeBlog,
   searchBlogs,
@@ -20,8 +22,10 @@ router.get('/trendingBlogs', getTrendingBlogs)
 router.get('/getBlogBySlug/:slug', getBlogBySlug)
 
 router.use(protect)
+router.get('/myBlogs', getMyBlogs)
 router.post('/uploadImage', uploadMiddleware.single('image'), uploadImage)
 router.post('/createBlog', createBlog)
+router.delete('/deleteBlogBySlug/:slug', deleteBlogBySlug)
 router.patch('/likeBlog', likeBlog)
 router.post('/addComment', addComment)
 

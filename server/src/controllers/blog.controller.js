@@ -112,7 +112,9 @@ export const getBlogBySlug = catchAsync(async (req, res, next) => {
       'personal_info.username personal_info.profile_img personal_info.fullname'
     )
     .populate('likes', 'personal_info.username')
-    .select('slug title des banner content activity tags publishedAt likes')
+    .select(
+      'slug title des banner content activity tags publishedAt likes draft'
+    )
 
   if (!blog) {
     throw new ApiError(404, 'Blog not found')
@@ -132,6 +134,56 @@ export const getBlogBySlug = catchAsync(async (req, res, next) => {
 })
 
 // protected route
+export const getMyBlogs = catchAsync(async (req, res, next) => {
+  const userId = req.user._id
+  const { page, draft, query, deletedDocCount } = req.query
+
+  // Pagination
+  let skip = (page - 1) * 5
+
+  if (deletedDocCount) {
+    skip -= deletedDocCount // If user has deleted some blogs then adjust skip
+  }
+
+  // Find blogs
+  const [blogs, totalDocs] = await Promise.all([
+    Blog.find({
+      author: userId,
+      draft,
+      title: { $regex: query, $options: 'i' }
+    })
+      .skip(skip)
+      .limit(5)
+      .sort({ publishedAt: -1 })
+      .select('slug title des banner activity tags publishedAt draft'),
+    Blog.countDocuments({
+      author: userId,
+      draft,
+      title: { $regex: query, $options: 'i' }
+    })
+  ])
+
+  res.status(200).json({ status: 'success', blogs, page, totalDocs })
+})
+
+export const deleteBlogBySlug = catchAsync(async (req, res, next) => {
+  const userId = req.user._id
+  const { slug } = req.params
+
+  const blog = await Blog.findOneAndDelete({ slug, author: userId })
+
+  await Promise.all([
+    Notification.deleteMany({ blog: blog._id }),
+    Comment.deleteMany({ blog_id: blog._id }),
+    User.findByIdAndUpdate(userId, {
+      $pull: { blogs: blog._id },
+      $inc: { 'account_info.total_posts': blog.draft ? 0 : -1 } // Decrement total_posts
+    })
+  ])
+
+  res.status(200).json({ status: 'success' })
+})
+
 export const uploadImage = catchAsync(async (req, res, next) => {
   if (req.file) {
     const tempFilePath = path.join(__dirname, req.file.originalname)
@@ -195,7 +247,7 @@ export const createBlog = catchAsync(async (req, res, next) => {
     slugFromBrowser ||
     title.toLowerCase().split(' ').join('-') + '-' + nanoid(5)
 
-  // If slug exists then update blog else create new blog
+  // If slug exists then update blog
   if (slugFromBrowser) {
     const blog = await Blog.findOneAndUpdate(
       { slug: newSlug },
@@ -205,12 +257,17 @@ export const createBlog = catchAsync(async (req, res, next) => {
         des,
         tags,
         content,
-        draft: draft ? draft : false
+        draft: draft ? true : false
       }
     )
 
+    await User.findByIdAndUpdate(authorId, {
+      $inc: { 'account_info.total_posts': draft ? -1 : 1 } // Decrement total_posts if blog is draft
+    })
+
     res.status(200).json({ status: 'success', id: blog.slug })
   } else {
+    // else create new blog
     const blog = await Blog.create({
       slug: newSlug,
       title,
